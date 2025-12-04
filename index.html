@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>QR CODE GENERATOR</title>
+
+<!-- 🔒 Protection Code Added -->
+<script>
+    // Disable Right Click
+    document.addEventListener('contextmenu', event => event.preventDefault());
+
+    // Disable Inspect & View-Source
+    document.onkeydown = function(e) {
+      if (
+        e.keyCode === 123 || // F12
+        (e.ctrlKey && e.shiftKey && e.keyCode === 73) || // Ctrl+Shift+I
+        (e.ctrlKey && e.shiftKey && e.keyCode === 67) || // Ctrl+Shift+C
+        (e.ctrlKey && e.shiftKey && e.keyCode === 74) || // Ctrl+Shift+J
+        (e.ctrlKey && e.keyCode === 85) // Ctrl+U
+      ) {
+        return false;
+      }
+    };
+</script>
+<!-- 🔒 End Protection Code -->
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+    body {
+        margin: 0;
+        font-family: 'Poppins', sans-serif;
+        background: #000;
+        color: white;
+        overflow-x: hidden;
+        text-align: center;
+    }
+
+    #particles-js {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+    }
+
+    .container {
+        margin-top: 40px;
+        background: rgba(0,0,0,0.58);
+        padding: 30px;
+        width: 85%;
+        max-width: 480px;
+        margin-left: auto;
+        margin-right: auto;
+        border-radius: 20px;
+        box-shadow: 0 0 25px rgba(255, 0, 153, 0.6);
+        backdrop-filter: blur(5px);
+    }
+
+    h1 {
+        font-size: 28px;
+        font-weight: 700;
+        color: #ff3cc7;
+        text-shadow: 0 0 15px #ff0099;
+        margin-bottom: 10px;
+    }
+
+    .boldwhite {
+        font-weight: 700;
+        color: #fff;
+        font-size: 16px;
+        text-shadow: 0 0 12px white;
+    }
+
+    input {
+        width: 90%;
+        padding: 10px;
+        border: none;
+        border-radius: 10px;
+        margin-bottom: 10px;
+        outline: none;
+        background: #111;
+        color: #fff;
+        font-size: 14px;
+    }
+
+    button {
+        padding: 10px 20px;
+        background: transparent;
+        border: 2px solid #ff00aa;
+        color: white;
+        border-radius: 10px;
+        cursor: pointer;
+        margin: 6px;
+        transition: .3s;
+    }
+
+    button:hover {
+        background: #ff00aa;
+        box-shadow: 0 0 15px #ff00aa;
+    }
+
+    .size-box {
+        margin-top: 15px;
+        margin-bottom: 5px;
+    }
+
+    #sizeValue {
+        font-size: 16px;
+        font-weight: 700;
+        color: #ff9dfc;
+        text-shadow: 0 0 8px #ff49c7;
+    }
+
+    input[type=range] {
+        width: 85%;
+    }
+
+    #qrcode {
+        margin-top: 20px;
+    }
+
+    .owner {
+        margin-top: 25px;
+        font-size: 18px;
+        font-weight: 700;
+        animation: rgb 3s infinite linear;
+    }
+
+    @keyframes rgb {
+        0% { color: red; }
+        33% { color: lime; }
+        66% { color: cyan; }
+        100% { color: red; }
+    }
+</style>
+</head>
+
+<body>
+
+<div id="particles-js"></div>
+
+<div class="container">
+    
+    <h1>QR CODE GENERATOR</h1>
+
+    <p class="boldwhite">🔰 Link එක paste කරලා generate button එක click කරන්න ️</p>
+    <p class="boldwhite">🔰 Link (URL) ⬇️</p>
+
+    <input type="text" id="url" placeholder="https://example.com/">
+
+    <button onclick="paste()">Paste</button>
+    <button onclick="generateQR()">Generate</button>
+    <button onclick="openLink()">Open</button>
+
+    <button onclick="clearAll()">Clear</button>
+
+    <div class="size-box">
+        <span id="sizeValue">360 px</span><br>
+        <input type="range" id="sizeSlider" min="150" max="600" value="360" oninput="updateSize()">
+    </div>
+
+    <div id="qrcode"></div>
+
+    <button onclick="downloadPNG()">Download PNG</button>
+    <button onclick="copyLink()">Copy Link</button>
+
+    <p class="owner">Owner By DTZ Shanuwa</p>
+</div>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<script>
+let size = 360;
+
+function generateQR() {
+    let url = document.getElementById("url").value;
+    if (url.trim() === "") return alert("Enter a valid URL");
+
+    document.getElementById("qrcode").innerHTML = "";
+
+    new QRCode(document.getElementById("qrcode"), {
+        text: url,
+        width: size,
+        height: size,
+        colorDark: "#ffffff",
+        colorLight: "#000000"
+    });
+}
+
+function updateSize() {
+    size = document.getElementById("sizeSlider").value;
+    document.getElementById("sizeValue").innerHTML = size + " px";
+}
+
+function paste() {
+    navigator.clipboard.readText().then(text => {
+        document.getElementById("url").value = text;
+    });
+}
+
+function openLink() {
+    let url = document.getElementById("url").value;
+    if (url.trim() !== "") window.open(url, "_blank");
+}
+
+function clearAll() {
+    document.getElementById("url").value = "";
+    document.getElementById("qrcode").innerHTML = "";
+}
+
+function copyLink() {
+    let url = document.getElementById("url").value;
+    navigator.clipboard.writeText(url);
+    alert("Copied!");
+}
+
+function downloadPNG() {
+    let img = document.querySelector("#qrcode img");
+    if (!img) return alert("Generate QR first");
+    let link = document.createElement("a");
+    link.href = img.src;
+    link.download = "qrcode.png";
+    link.click();
+}
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+
+<script>
+particlesJS("particles-js", {
+  "particles": {
+    "number": { "value": 100 },
+    "color": { "value": "#ff0000" },
+    "line_linked": {
+      "enable": true,
+      "distance": 150,
+      "color": "#ff0000",
+      "opacity": 0.5,
+      "width": 1
+    },
+    "move": { "enable": true, "speed": 1 },
+    "size": { "value": 2 },
+    "opacity": { "value": 0.8 }
+  },
+  "interactivity": {
+    "events": { "onhover": { "enable": true, "mode": "repulse" }}
+  }
+});
+</script>
+
+</body>
+</html>
